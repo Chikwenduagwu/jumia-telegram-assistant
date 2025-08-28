@@ -9,42 +9,40 @@ export default async function handler(req, res) {
     const { message } = req.body;
 
     if (!message || !message.text) {
-      return res.status(200).send("No message");
+      return res.status(400).json({ error: "Invalid Telegram payload" });
     }
 
-    const chatId = message.chat.id;
     const userText = message.text;
 
-    // 🔑 Fireworks API call
-    const response = await axios.post(
+    // Send to FireworksAI
+    const completion = await axios.post(
       "https://api.fireworks.ai/inference/v1/chat/completions",
       {
         model: "accounts/sentientfoundation-serverless/models/dobby-mini-unhinged-plus-llama-3-1-8b",
         messages: [
-          { role: "system", content: "You are a shopping assistant for Jumia Nigeria (https://jumia.com.ng)." },
+          { role: "system", content: "You are a helpful e-commerce assistant for Jumia Nigeria." },
           { role: "user", content: userText }
-        ],
-        max_tokens: 300
+        ]
       },
       {
         headers: {
-          "Authorization": `Bearer ${process.env.FIREWORKS_API_KEY}`,
+          Authorization: `Bearer ${process.env.FIREWORKS_API_KEY}`,
           "Content-Type": "application/json"
         }
       }
     );
 
-    const botReply = response.data.choices?.[0]?.message?.content || "Sorry, I couldn’t understand that.";
+    const reply = completion.data.choices?.[0]?.message?.content || "Sorry, I couldn’t process that.";
 
-    // 🔹 Send reply back to Telegram
+    // Send reply back to Telegram
     await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      chat_id: chatId,
-      text: botReply
+      chat_id: message.chat.id,
+      text: reply
     });
 
-    res.status(200).send("Message processed ✅");
-  } catch (error) {
-    console.error("Bot error:", error.response?.data || error.message);
-    res.status(500).send("Internal Server Error");
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error("Bot error:", err.response?.data || err.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
