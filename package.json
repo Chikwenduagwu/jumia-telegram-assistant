@@ -1,0 +1,16 @@
+{
+  "name": "jumia-telegram-assistant",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.4.5",
+    "openai": "^4.55.4",
+    "telegraf": "^4.16.3"
+  }
+}
