@@ -1,7 +1,5 @@
 # Agent WisdomTech Jumia assistant bot
 
-🛍️ ##Jumia Telegram Assistant
-
 # Built by WisdomTech [https://x.com/agwuchikwendu] 🚀 <br>
 
 This project is a Telegram AI shopping assistant for Jumia Nigeria powered by Dobby Unhinged 8B model through FireworksAI
@@ -16,6 +14,6 @@ This project is a Telegram AI shopping assistant for Jumia Nigeria powered by Do
 
 ⚡ Serverless <br>
 
-This project was built by WisdomTech — blending AI + E-Commerce + Telegram to create a powerful assistant experience. <br>
+This project was built by WisdomTech, blending AI + E-Commerce + Telegram to create a powerful assistant experience. <br>
 
 If you’d like to collaborate or learn more, feel free to connect! 🚀  [https://x.com/agwuchikwendu]
