@@ -14,3 +14,6 @@
     "telegraf": "^4.16.3"
   }
 }
+"engines": {
+  "node": "22.x"
+}
