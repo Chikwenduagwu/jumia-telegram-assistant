@@ -1,19 +1,17 @@
 {
-  "name": "jumia-telegram-assistant",
+  "name": "telegram-jumia-bot",
   "version": "1.0.0",
-  "type": "module",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "node index.js"
+    "dev": "vercel dev",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "22.x"
   },
   "dependencies": {
-    "axios": "^1.7.2",
-    "cheerio": "^1.0.0-rc.12",
-    "dotenv": "^16.4.5",
-    "openai": "^4.55.4",
-    "telegraf": "^4.16.3"
+    "axios": "^1.6.7",
+    "express": "^4.19.2"
   }
-}
-"engines": {
-  "node": "22.x"
 }
