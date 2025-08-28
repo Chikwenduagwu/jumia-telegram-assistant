@@ -1,7 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/bot.js": {
+    "api/**/*.js": {
       "runtime": "nodejs22.x"
     }
   }
