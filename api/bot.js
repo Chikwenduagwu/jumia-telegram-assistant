@@ -18,33 +18,15 @@ function cleanText(text) {
 
 // Check if query is Jumia-related
 function isJumiaQuery(text) {
-  const jumiaKeywords = [
-  // Categories
-  "appliances", "phones & tablets", "health & beauty", "home & office",
+  const jumiaKeywords = ["appliances", "phones & tablets", "health & beauty", "home & office",
   "electronics", "fashion", "supermarket", "computing", "baby products",
   "gaming", "musical instruments", "sporting goods", "toys & games",
   "groceries", "tv & audio", "generators & inverters", "mobile accessories",
-  "sneakers", "automobile",
-
-  // Promotions & Deals
-  "flash sales", "brand festival", "early bird", "xiaomi store",
+  "sneakers", "automobile", "flash sales", "brand festival", "early bird", "xiaomi store",
   "awoof deals", "treasure hunt", "banger deals", "buy 2 pay for 1",
-  "earn while you shop", "unlock your deal", "options plenty",
-
-  // Services & Site Features
-  "jumia marketplace", "jumia logistics", "jumiapay",
-  "seller center", "jumia delivery",
-
-  // User Actions & Account
-  "place an order", "payment options", "track an order",
-  "cancel an order", "returns & refunds", "wishlist", "my account", "help center",
-
-  // Corporate/Brand Keywords
-  "innovation", "convenience", "affordable", "e-commerce africa", "technology",
-
-  // Metrics
-  "800+ million visits", "active sellers", "orders 2024", "products", "active consumers"
-];
+  "earn while you shop", "unlock your deal", "options plenty", "jumia marketplace", "jumia logistics", "jumiapay",
+  "seller center", "jumia delivery", "place an order", "payment options", "track an order",
+  "cancel an order", "returns & refunds", "wishlist", "my account", "help center", "innovation", "convenience", "affordable", "e-commerce africa", "technology", "800+ million visits", "active sellers", "orders 2024", "products", "active consumers"];
   return keywords.some((kw) => text.toLowerCase().includes(kw));
 }
 
