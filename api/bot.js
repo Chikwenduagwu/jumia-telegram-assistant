@@ -34,22 +34,57 @@ const jumiaKeywords = [
   "800+ million visits", "active sellers", "orders 2024", "products", "active consumers"
 ];
 
-// Simple bad word filter
-const bannedWords = ["fuck", "shit", "bitch", "sex", "porn", "dick", "pussy"];
+// Allowed general human phrases (will not trigger rejection)
+const allowedPhrases = [
+  // English
+  "hi", "hello", "hey", "good morning", "good afternoon", "good evening", "thanks", "thank you",
+
+  // Yoruba
+  "bawo", "se daadaa ni", "ekaro", "eku ile", "ese",
+
+  // Igbo
+  "kedụ", "ọ dị mma", "nne", "nna", "daalụ",
+
+  // Hausa
+  "sannu", "ina kwana", "yaya", "nagode",
+
+  // French
+  "bonjour", "bonsoir", "salut", "merci"
+];
+
+// Map of foul → Queen's English replacements
+const politeReplacements = {
+  "fuck": "mess up",
+  "shit": "nonsense",
+  "bitch": "unpleasant person",
+  "sex": "intimacy",
+  "porn": "indecent material",
+  "dick": "gentleman",
+  "pussy": "lady"
+};
 
 function cleanText(text) {
   let cleaned = text;
-  for (const word of bannedWords) {
-    const regex = new RegExp(word, "gi");
-    cleaned = cleaned.replace(regex, "****");
+  for (const [bad, good] of Object.entries(politeReplacements)) {
+    const regex = new RegExp(bad, "gi");
+    cleaned = cleaned.replace(regex, good);
   }
   return cleaned;
 }
 
-// Check if message is Jumia-related
+// Check if message is just a human greeting/phrase
+function isAllowedPhrase(text) {
+  const lower = text.toLowerCase();
+  return allowedPhrases.some((phrase) => lower.includes(phrase));
+}
+
+// Check if message is Jumia-related OR allowed phrase
 function isJumiaQuery(text) {
   const lower = text.toLowerCase();
-  return jumiaKeywords.some((kw) => lower.includes(kw.toLowerCase()));
+  return (
+    jumiaKeywords.some((kw) => lower.includes(kw.toLowerCase())) ||
+    isAllowedPhrase(text)
+  );
 }
 
 export default async function handler(req, res) {
@@ -66,6 +101,15 @@ export default async function handler(req, res) {
     const userText = message.text;
     const chatId = message.chat.id;
 
+    // If user typed a greeting/allowed phrase
+    if (isAllowedPhrase(userText)) {
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: "Hello 👋! How can I help you with Jumia today?"
+      });
+      return res.status(200).send("Greeting handled");
+    }
+
     // Restrict to Jumia-related queries
     if (!isJumiaQuery(userText)) {
       await axios.post(`${TELEGRAM_API}/sendMessage`, {
@@ -81,7 +125,7 @@ export default async function handler(req, res) {
       {
         model: MODEL,
         messages: [
-          { role: "system", content: "You are Dobby AI, a polite assistant for Jumia Nigeria (jumia.com.ng). Avoid foul or rude language and keep responses professional." },
+          { role: "system", content: "You are Dobby AI, a polite assistant for Jumia Nigeria (jumia.com.ng). Avoid foul or rude language and always use responsible, refined English." },
           { role: "user", content: userText }
         ],
         max_tokens: 200
@@ -96,7 +140,7 @@ export default async function handler(req, res) {
 
     let reply = response.data.choices[0].message.content || "";
 
-    // Clean foul or rude language
+    // Replace foul/rude language with refined alternatives
     reply = cleanText(reply);
 
     // Send reply to Telegram
