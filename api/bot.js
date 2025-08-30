@@ -1,5 +1,4 @@
 import axios from "axios";
-import * as cheerio from "cheerio";
 
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 const FIREWORKS_API = "https://api.fireworks.ai/inference/v1/chat/completions";
@@ -13,172 +12,176 @@ function isJumiaRelated(text) {
     'return', 'account', 'cart', 'checkout', 'price', 'discount', 'coupon',
     'seller', 'buy', 'purchase', 'item', 'category', 'search', 'track',
     'customer service', 'help', 'support', 'complaint', 'review', 'rating',
-    'warranty', 'exchange', 'cancel', 'store', 'shop', 'marketplace'
+    'warranty', 'exchange', 'cancel', 'store', 'shop', 'marketplace', 'online shopping'
   ];
   
   const lowerText = text.toLowerCase();
-  return jumiaKeywords.some(keyword => lowerText.includes(keyword)) || 
-         lowerText.includes('jumia') ||
-         lowerText.includes('shopping') ||
-         lowerText.includes('e-commerce');
+  return jumiaKeywords.some(keyword => lowerText.includes(keyword));
 }
 
-// Function to scan Jumia website for relevant information
-async function scanJumiaWebsite(query) {
-  try {
-    // Scan main page for general info
-    const mainPageResponse = await axios.get(JUMIA_BASE_URL, {
-      timeout: 10000,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    });
-    
-    const $ = cheerio.load(mainPageResponse.data);
-    
-    // Extract relevant information
-    const pageInfo = {
-      categories: [],
-      promotions: [],
-      generalInfo: ""
-    };
-    
-    // Extract categories
-    $('.flyout-link, .nav-item, .category').each((i, el) => {
-      const text = $(el).text().trim();
-      if (text && text.length > 2) {
-        pageInfo.categories.push(text);
-      }
-    });
-    
-    // Extract promotional info
-    $('.promotion, .banner, .deal').each((i, el) => {
-      const text = $(el).text().trim();
-      if (text && text.length > 5) {
-        pageInfo.promotions.push(text);
-      }
-    });
-    
-    // Get page title and meta description
-    pageInfo.generalInfo = $('title').text() + " " + $('meta[name="description"]').attr('content');
-    
-    return pageInfo;
-  } catch (error) {
-    console.log("Website scan error:", error.message);
-    return {
-      categories: ["Electronics", "Fashion", "Home & Garden", "Health & Beauty", "Sports", "Automotive"],
-      promotions: ["Check current deals on Jumia Nigeria"],
-      generalInfo: "Jumia Nigeria - Online Shopping for Electronics, Phones, Fashion & more"
-    };
-  }
+// Function to get Jumia-related information (simplified without web scraping)
+async function getJumiaInfo() {
+  // Since web scraping might be blocked, we'll use static but comprehensive Jumia info
+  return {
+    categories: [
+      "Electronics", "Phones & Tablets", "Computing", "Fashion", 
+      "Home & Kitchen", "Health & Beauty", "Sports & Fitness", 
+      "Baby Products", "Automotive", "Books & Games"
+    ],
+    services: [
+      "Free delivery on orders above ₦15,000",
+      "7-day return policy",
+      "Secure payment options (Card, USSD, Bank Transfer)",
+      "Jumia Pay wallet service",
+      "JumiaPay bills payment",
+      "Customer protection guarantee"
+    ],
+    generalInfo: "Jumia Nigeria is the leading online marketplace for electronics, fashion, home items and more with reliable delivery across Nigeria"
+  };
 }
 
-// Enhanced system prompt with Jumia-specific guidelines
-function createSystemPrompt(websiteInfo) {
-  return `You are Dobby AI, a dedicated customer service representative for Jumia Nigeria (jumia.com.ng), Nigeria's leading online marketplace.
+// Enhanced system prompt
+function createSystemPrompt(jumiaInfo) {
+  return `You are Dobby AI, a professional customer service representative for Jumia Nigeria (jumia.com.ng).
 
-IMPORTANT GUIDELINES:
-1. ONLY answer questions related to Jumia Nigeria, online shopping, e-commerce, or general customer service inquiries
-2. If asked about unrelated topics, politely redirect to Jumia-related matters
-3. Always maintain a professional, helpful, and friendly tone
-4. Use the current website information provided to give accurate answers
-5. When you don't have specific information, direct customers to official Jumia channels
+STRICT GUIDELINES:
+1. ONLY answer questions about Jumia Nigeria, online shopping, orders, products, or e-commerce
+2. If asked about non-Jumia topics, politely redirect to Jumia matters
+3. Always be helpful, polite, and professional
+4. Keep responses concise (under 200 words)
+5. Use the Jumia information provided to give accurate answers
 
-CURRENT JUMIA WEBSITE INFO:
-- Available Categories: ${websiteInfo.categories.slice(0, 10).join(', ')}
-- Current Promotions: ${websiteInfo.promotions.slice(0, 3).join('; ')}
-- General Info: ${websiteInfo.generalInfo}
+JUMIA NIGERIA INFORMATION:
+Categories: ${jumiaInfo.categories.join(', ')}
+Services: ${jumiaInfo.services.join('; ')}
+About: ${jumiaInfo.generalInfo}
 
-RESPONSE STYLE:
-- Always greet customers warmly
-- Be concise but informative
-- Offer helpful suggestions when possible
-- End with "Is there anything else I can help you with regarding Jumia?"
-- If the question is not Jumia-related, say: "I'm here to assist with Jumia Nigeria inquiries only. How can I help you with your shopping or orders on jumia.com.ng?"
+RESPONSE GUIDELINES:
+- Start with a friendly greeting for new conversations
+- Provide helpful, accurate information about Jumia
+- If you don't know specific details, direct to official Jumia channels
+- Always end with asking if there's anything else about Jumia you can help with
+- Use emojis sparingly and professionally
 
-Remember: You represent Jumia Nigeria's commitment to excellent customer service.`;
+IMPORTANT: If the question is NOT about Jumia, shopping, orders, or e-commerce, respond with:
+"Hello! I'm Dobby AI, your Jumia Nigeria customer service assistant. I can only help with questions about Jumia.com.ng, orders, products, shopping, and related services. How can I assist you with your Jumia experience today?"`;
 }
 
 export default async function handler(req, res) {
+  // Handle GET requests for health check
   if (req.method !== "POST") {
-    return res.status(200).send("Jumia Customer Service Bot running...");
+    return res.status(200).json({ 
+      status: "running", 
+      message: "Jumia Customer Service Bot is active" 
+    });
   }
 
   try {
+    console.log("Received request body:", JSON.stringify(req.body, null, 2));
+
     const message = req.body?.message;
-    if (!message || !message.text) {
-      return res.status(200).send("No text");
+    if (!message) {
+      console.log("No message in request body");
+      return res.status(200).json({ status: "no_message" });
+    }
+
+    if (!message.text) {
+      console.log("No text in message");
+      return res.status(200).json({ status: "no_text" });
     }
 
     const userText = message.text;
     const chatId = message.chat.id;
+    const firstName = message.from?.first_name || "Customer";
 
-    // Check if the question is Jumia-related
+    console.log(`Processing message from ${firstName}: ${userText}`);
+
+    // Check if question is Jumia-related
     if (!isJumiaRelated(userText)) {
-      const redirectMessage = "Hello! 👋 I'm Wisdom Powered by Dobby AI, your Jumia Nigeria customer service assistant. I'm here to help with questions about shopping, orders, products, and services on jumia.com.ng.\n\nHow can I assist you with your Jumia experience today?";
+      const redirectMessage = `Hello ${firstName}! 👋\n\nI'm Dobby AI, your dedicated Jumia Nigeria customer service assistant. I can only help with questions about:\n\n🛍️ Shopping on jumia.com.ng\n📦 Orders and delivery\n💳 Payments and refunds\n📱 Products and categories\n🔧 Account issues\n\nHow can I assist you with your Jumia experience today?`;
       
       await axios.post(`${TELEGRAM_API}/sendMessage`, {
         chat_id: chatId,
         text: redirectMessage
       });
       
-      return res.status(200).send("Redirected to Jumia topics");
+      return res.status(200).json({ status: "redirected" });
     }
 
-    // Scan Jumia website for current information
-    console.log("Scanning Jumia website for current information...");
-    const websiteInfo = await scanJumiaWebsite(userText);
+    // Get Jumia information
+    const jumiaInfo = await getJumiaInfo();
 
-    // Create enhanced system prompt with website data
-    const systemPrompt = createSystemPrompt(websiteInfo);
+    // Create system prompt with Jumia context
+    const systemPrompt = createSystemPrompt(jumiaInfo);
 
-    // Call Fireworks API with enhanced prompt
+    console.log("Calling Fireworks API...");
+
+    // Call Fireworks API
     const response = await axios.post(
       FIREWORKS_API,
       {
         model: MODEL,
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Customer inquiry: ${userText}` }
+          { role: "user", content: `Customer ${firstName} asks: ${userText}` }
         ],
-        max_tokens: 300,
-        temperature: 0.7
+        max_tokens: 250,
+        temperature: 0.7,
+        top_p: 0.9
       },
       {
         headers: {
           Authorization: `Bearer ${process.env.FIREWORKS_API_KEY}`,
           "Content-Type": "application/json"
-        }
+        },
+        timeout: 15000
       }
     );
 
+    if (!response.data?.choices?.[0]?.message?.content) {
+      throw new Error("Invalid API response structure");
+    }
+
     const reply = response.data.choices[0].message.content;
 
-    // Add Jumia branding to response
-    const brandedReply = `🛍️ **Jumia Nigeria Customer Service**\n\n${reply}\n\n---\n💡 For urgent issues, visit: https://jumia.com.ng/customer-service/\n📱 Download the Jumia app for better shopping experience!`;
+    // Format the final response
+    const finalReply = `🛍️ **Jumia Nigeria Customer Service**\n\n${reply}\n\n---\n💡 Need more help? Visit: https://jumia.com.ng/customer-service/\n📱 Download the Jumia app for better experience!`;
+
+    console.log("Sending response to Telegram...");
 
     // Send reply to Telegram
     await axios.post(`${TELEGRAM_API}/sendMessage`, {
       chat_id: chatId,
-      text: brandedReply,
+      text: finalReply,
       parse_mode: "Markdown"
     });
 
-    return res.status(200).send("Message processed successfully");
+    console.log("Message sent successfully");
+    return res.status(200).json({ status: "success" });
 
   } catch (error) {
-    console.error("Error:", error.response?.data || error.message);
+    console.error("Error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      stack: error.stack
+    });
     
-    // Send error message to user
+    // Send user-friendly error message
     try {
+      const errorMessage = "🙏 I apologize for the technical difficulty. Please try again in a moment.\n\nFor immediate assistance, you can:\n• Visit https://jumia.com.ng/customer-service/\n• Call Jumia customer care\n• Use the Jumia mobile app\n\nThank you for your patience!";
+      
       await axios.post(`${TELEGRAM_API}/sendMessage`, {
         chat_id: req.body?.message?.chat?.id,
-        text: "🙏 I apologize, but I'm experiencing technical difficulties. Please try again in a moment or contact Jumia customer service directly at https://jumia.com.ng/customer-service/"
+        text: errorMessage
       });
     } catch (sendError) {
       console.error("Failed to send error message:", sendError.message);
     }
     
-    return res.status(500).send("Error handling message");
+    return res.status(500).json({ 
+      error: "Internal server error",
+      details: error.message 
+    });
   }
 }
