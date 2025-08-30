@@ -19,9 +19,9 @@ function isJumiaRelated(text) {
   return jumiaKeywords.some(keyword => lowerText.includes(keyword));
 }
 
-// Function to get Jumia-related information (simplified without web scraping)
+// Get Function
 async function getJumiaInfo() {
-  // Since web scraping might be blocked, we'll use static but comprehensive Jumia info
+  // else
   return {
     categories: [
       "Electronics", "Phones & Tablets", "Computing", "Fashion", 
@@ -98,7 +98,7 @@ export default async function handler(req, res) {
 
     // Check if question is Jumia-related
     if (!isJumiaRelated(userText)) {
-      const redirectMessage = `Hello ${firstName}! 👋\n\nI'm Dobby AI, your dedicated Jumia Nigeria customer service assistant. I can only help with questions about:\n\n🛍️ Shopping on jumia.com.ng\n📦 Orders and delivery\n💳 Payments and refunds\n📱 Products and categories\n🔧 Account issues\n\nHow can I assist you with your Jumia experience today?`;
+      const redirectMessage = `Hello ${firstName}! 👋\n\nI'm Wisdom Powered by Dobby AI, your dedicated Jumia Nigeria customer service assistant. I can only help with questions about:\n\n🛍️ Shopping on jumia.com.ng\n📦 Orders and delivery\n💳 Payments and refunds\n📱 Products and categories\n🔧 Account issues\n\nHow can I assist you with your Jumia experience today?`;
       
       await axios.post(`${TELEGRAM_API}/sendMessage`, {
         chat_id: chatId,
@@ -111,7 +111,7 @@ export default async function handler(req, res) {
     // Get Jumia information
     const jumiaInfo = await getJumiaInfo();
 
-    // Create system prompt with Jumia context
+    // Create prompt if
     const systemPrompt = createSystemPrompt(jumiaInfo);
 
     console.log("Calling Fireworks API...");
@@ -144,7 +144,7 @@ export default async function handler(req, res) {
 
     const reply = response.data.choices[0].message.content;
 
-    // Format the final response
+    // final response
     const finalReply = `🛍️ **Jumia Nigeria Customer Service**\n\n${reply}\n\n---\n💡 Need more help? Visit: https://jumia.com.ng/customer-service/\n📱 Download the Jumia app for better experience!`;
 
     console.log("Sending response to Telegram...");
