@@ -18,7 +18,7 @@ function cleanText(text) {
 
 // Check if query is Jumia-related
 function isJumiaQuery(text) {
-  const keywords = ["jumia", "order", "delivery", "product", "cart", "jumia.com.ng", "payment"];
+  const keywords = ["jumia", "order", "delivery", "product", "cart", "jumia.com.ng", "payment", "phone", "phones", "PC", "store", "laptop"];
   return keywords.some((kw) => text.toLowerCase().includes(kw));
 }
 
