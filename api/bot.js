@@ -37,7 +37,7 @@ const jumiaKeywords = [
 // Allowed general human phrases (will not trigger rejection)
 const allowedPhrases = [
   // English
-  "hi", "hello", "hey", "good morning", "good afternoon", "good evening", "thanks", "thank you",
+  "hi", "hello", "hey", "good morning", "good afternoon", "good evening", "thanks", "thank you" "okay" "ok",
 
   // Yoruba
   "bawo", "se daadaa ni", "ekaro", "eku ile", "ese",
