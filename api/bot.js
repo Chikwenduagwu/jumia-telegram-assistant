@@ -5,7 +5,7 @@ const FIREWORKS_API = "https://api.fireworks.ai/inference/v1/chat/completions";
 const MODEL = "accounts/sentientfoundation-serverless/models/dobby-mini-unhinged-plus-llama-3-1-8b";
 
 // Very simple bad word filter (expand list as needed)
-const bannedWords = ["fuck", "shit", "bitch", "sex", "porn", "dick", "pussy", "ass", "decent-ass"];
+const bannedWords = ["fuck", "shit", "bitch", "sex", "porn", "dick", "pussy"];
 
 function cleanText(text) {
   let cleaned = text;
@@ -18,15 +18,7 @@ function cleanText(text) {
 
 // Check if query is Jumia-related
 function isJumiaQuery(text) {
-  const jumiaKeywords = ["appliances", "phones & tablets", "health & beauty", "home & office",
-  "electronics", "fashion", "supermarket", "computing", "baby products",
-  "gaming", "musical instruments", "sporting goods", "toys & games",
-  "groceries", "tv & audio", "generators & inverters", "mobile accessories",
-  "sneakers", "automobile", "flash sales", "brand festival", "early bird", "xiaomi store",
-  "awoof deals", "treasure hunt", "banger deals", "buy 2 pay for 1",
-  "earn while you shop", "unlock your deal", "options plenty", "jumia marketplace", "jumia logistics", "jumiapay",
-  "seller center", "jumia delivery", "place an order", "payment options", "track an order",
-  "cancel an order", "returns & refunds", "wishlist", "my account", "help center", "innovation", "convenience", "affordable", "e-commerce africa", "technology", "800+ million visits", "active sellers", "orders 2024", "products", "active consumers"];
+  const keywords = ["jumia", "order", "delivery", "product", "cart", "jumia.com.ng", "payment"];
   return keywords.some((kw) => text.toLowerCase().includes(kw));
 }
 
