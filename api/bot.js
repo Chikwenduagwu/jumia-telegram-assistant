@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import * as cheerio from "cheerio";
 
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 const FIREWORKS_API = "https://api.fireworks.ai/inference/v1/chat/completions";
