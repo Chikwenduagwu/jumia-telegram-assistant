@@ -10,10 +10,14 @@ This project is a Telegram AI shopping assistant for Jumia Nigeria powered by Do
 
 🛒 E-Commerce Knowledge — Can answer product, order, and shopping questions about Jumia. <br>
 
-🧭 Fallback Logic — Responds gracefully if the query isn’t Jumia-related. <br>
-
 ⚡ Serverless <br>
 
 This project was built by WisdomTech, blending AI + E-Commerce + Telegram to create a powerful assistant experience. <br>
 
 If you’d like to collaborate or learn more, feel free to connect! 🚀  [https://x.com/agwuchikwendu]
+
+# Version 2 Update
+
+🧭 Fallback Logic — Responds gracefully if the query isn’t Jumia-related. <br>
+
+🤖 Better Reply
