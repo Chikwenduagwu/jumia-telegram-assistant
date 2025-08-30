@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "axios": "^1.6.0"
+    "cherryio": "^1.0.3"
   },
   "engines": {
     "node": "20.x"
