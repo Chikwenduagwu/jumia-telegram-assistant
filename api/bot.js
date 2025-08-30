@@ -5,7 +5,7 @@ const FIREWORKS_API = "https://api.fireworks.ai/inference/v1/chat/completions";
 const MODEL = "accounts/sentientfoundation-serverless/models/dobby-mini-unhinged-plus-llama-3-1-8b";
 
 // Very simple bad word filter (expand list as needed)
-const bannedWords = ["fuck", "shit", "bitch", "sex", "porn", "dick", "pussy"];
+const bannedWords = ["fuck", "shit", "bitch", "sex", "porn", "dick", "pussy", "ass", "decent-ass"];
 
 function cleanText(text) {
   let cleaned = text;
