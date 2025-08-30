@@ -18,7 +18,15 @@ function cleanText(text) {
 
 // Check if query is Jumia-related
 function isJumiaQuery(text) {
-  const keywords = ["jumia", "order", "delivery", "product", "cart", "jumia.com.ng", "payment", "phone", "phones", "PC", "store", "laptop"];
+  const keywords = [
+  "appliances", "phones & tablets", "health & beauty", "home & office",
+  "electronics", "fashion", "supermarket", "computing", "baby products",
+  "gaming", "musical instruments", "brand festival", "early bird",
+  "xiaomi store", "flash sales", "treasure hunt", "awoof deals",
+  "jumia delivery", "call to order", "up to 80% off", "buy 2 pay for 1",
+  "earn while you shop", "unlock your deal", "jumia", "jumia nigeria",
+  "jumia.com.ng", "vendor center", "sell on jumia"
+];
   return keywords.some((kw) => text.toLowerCase().includes(kw));
 }
 
